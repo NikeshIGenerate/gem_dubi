@@ -29,7 +29,7 @@ class EventController extends ChangeNotifier {
     notifyListeners();
 
     listings = await repo.fetchListing(user: user, category: category?.id);
-    listings.sort((a, b) => b.startDate.compareTo(a.startDate));
+    listings.sort((a, b) => a.startDate.difference(DateTime.now()).abs().compareTo(b.startDate.difference(DateTime.now()).abs()));
     loading = false;
     notifyListeners();
   }
@@ -39,7 +39,7 @@ class EventController extends ChangeNotifier {
     categories = await repo.fetchCategories();
     selectedCategory = selectedCategory ?? categories[0];
     listings = await repo.fetchListing(user: user, category: selectedCategory!.id);
-    listings.sort((a, b) => b.startDate.compareTo(a.startDate));
+    listings.sort((a, b) => a.startDate.difference(DateTime.now()).abs().compareTo(b.startDate.difference(DateTime.now()).abs()));
     loading = false;
     notifyListeners();
   }

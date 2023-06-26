@@ -68,6 +68,7 @@ class Booking {
     return [
           BookingStatus.waiting,
           BookingStatus.confirmed,
+          BookingStatus.paid,
         ].contains(status);
   }
 

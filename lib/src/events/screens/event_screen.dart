@@ -94,38 +94,96 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
           ),
         ],
         body: ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  FontAwesomeIcons.calendarDays,
-                  color: Colors.white,
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(
+                        FontAwesomeIcons.calendarDays,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Event Date'),
+                            const SizedBox(height: 3),
+                            Text(
+                              widget.listing.multiDayEvent
+                                  ? '${intl.DateFormat("dd MMM, yyyy").format(widget.listing.startDate)} at ${intl.DateFormat("HH:mm a").format(widget.listing.startDate)}'
+                                  : intl.DateFormat('d MMM, yyyy').format(widget.listing.startDate),
+                              style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  widget.listing.multiDayEvent
-                      ? '${widget.listing.startDate.day} - ${intl.DateFormat("d MMM, yyyy").format(widget.listing.endDate!)}'
-                      : intl.DateFormat('d MMM, yyyy').format(widget.listing.endDate!),
-                  style: theme.textTheme.titleSmall,
-                ),
-                const Spacer(),
-                const Icon(
-                  FontAwesomeIcons.clock,
-                  color: Colors.white,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  [
-                    intl.DateFormat('h a').format(widget.listing.startDate),
-                    if (widget.listing.multiHourEvent) intl.DateFormat('h a').format(widget.listing.endDate!),
-                  ].join(' - '),
-                  style: theme.textTheme.titleSmall,
-                ),
-                const Spacer(),
+                if (widget.listing.multiDayEvent) const SizedBox(width: 10),
+                if (widget.listing.multiDayEvent)
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(
+                          FontAwesomeIcons.calendarDays,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Event End'),
+                              const SizedBox(height: 3),
+                              Text(
+                                '${intl.DateFormat("dd MMM, yyyy").format(widget.listing.endDate!)} at ${intl.DateFormat("HH:mm a").format(widget.listing.endDate!)}',
+                                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     const Icon(
+            //       FontAwesomeIcons.calendarDays,
+            //       color: Colors.white,
+            //     ),
+            //     const SizedBox(width: 6),
+            //     Text(
+            //       widget.listing.multiDayEvent
+            //           ? '${widget.listing.startDate.day} - ${intl.DateFormat("d MMM, yyyy").format(widget.listing.endDate!)}'
+            //           : intl.DateFormat('d MMM, yyyy').format(widget.listing.endDate!),
+            //       style: theme.textTheme.titleSmall,
+            //     ),
+            //     const Spacer(),
+            //     const Icon(
+            //       FontAwesomeIcons.clock,
+            //       color: Colors.white,
+            //     ),
+            //     const SizedBox(width: 6),
+            //     Text(
+            //       [
+            //         intl.DateFormat('h a').format(widget.listing.startDate),
+            //         if (widget.listing.multiHourEvent) intl.DateFormat('h a').format(widget.listing.endDate!),
+            //       ].join(' - '),
+            //       style: theme.textTheme.titleSmall,
+            //     ),
+            //     const Spacer(),
+            //   ],
+            // ),
             const SizedBox(height: 30),
             SizedBox(
               height: 30,
@@ -137,10 +195,10 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                 indicatorSize: TabBarIndicatorSize.label,
                 indicatorPadding: const EdgeInsets.symmetric(horizontal: 12),
                 indicatorWeight: 1.0,
-                labelPadding: EdgeInsets.only(right: 10),
+                labelPadding: const EdgeInsets.only(right: 10),
                 unselectedLabelColor: Colors.grey.shade700,
-                labelStyle: TextStyle(fontSize: 16),
-                unselectedLabelStyle: TextStyle(fontSize: 16),
+                labelStyle: const TextStyle(fontSize: 16),
+                unselectedLabelStyle: const TextStyle(fontSize: 16),
                 tabs: const [
                   Tab(text: 'About'),
                   Tab(text: 'Privileges'),
@@ -150,7 +208,7 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
             ),
             const SizedBox(height: 10),
             AnimatedContainer(
-              duration: Duration(seconds: 1),
+              duration: const Duration(seconds: 1),
               child: _tabController.index == 0
                   ? Text(widget.listing.description)
                   : _tabController.index == 1
@@ -173,10 +231,7 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                       }
                     },
                     child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white)
-                      ),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white)),
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
