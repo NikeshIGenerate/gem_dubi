@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gem_dubi/common/alerts/snack_bars.dart';
 import 'package:gem_dubi/common/utils/app_router.dart';
 import 'package:gem_dubi/common/utils/state_theme.dart';
 import 'package:gem_dubi/src/events/controllers/events_controller.dart';
@@ -28,6 +27,7 @@ class EventScreen extends ConsumerStatefulWidget {
 class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateTheme, SingleTickerProviderStateMixin {
   bool _isLoading = false;
   late TabController _tabController;
+  final eventDateController = TextEditingController();
 
   @override
   void initState() {
@@ -315,7 +315,16 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                             : null,
                         onPressed: widget.listing.isPast || widget.listing.alreadyBooked
                             ? null
-                            : () {
+                            : () async {
+                                DateTime? eventDate = widget.listing.endDate;
+                                if (widget.listing.multiDayEvent) {
+                                  bookTicket();
+                                  return;
+                                }
+                                if (eventDate == null) {
+                                  showSnackMessage(title: 'Error', text: 'Please select a booking date', icon: Icons.error);
+                                  return;
+                                }
                                 setState(() {
                                   _isLoading = true;
                                 });
@@ -325,6 +334,7 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                                       listing: widget.listing,
                                       user: ref.read(loginProviderRef).user,
                                       tickets: 1,
+                                      eventDate: eventDate,
                                     )
                                     .then((value) {
                                   setState(() {
@@ -335,7 +345,7 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                                   setState(() {
                                     _isLoading = false;
                                   });
-                                  showSnackBarMessage('Error while booking the event');
+                                  showSnackMessage(title: 'Error', text: 'Error while booking the event', icon: Icons.error);
                                 });
                               },
                         child: Text(
@@ -352,6 +362,130 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
         ),
       ),
     );
+  }
+
+  void bookTicket() async {
+    eventDateController.text = '';
+    DateTime? selectedDate;
+    if (widget.listing.multiDayEvent) {
+      var response = await showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.black,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        elevation: 8,
+        builder: (ctx) {
+          return StatefulBuilder(builder: (context, setState) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      controller: eventDateController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.black,
+                        labelText: 'Select Booking Date',
+                        labelStyle: TextStyle(color: Colors.white),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder:  OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                      showCursor: false,
+                      readOnly: true,
+                      onTap: () async {
+                        selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: widget.listing.startDate,
+                          firstDate: widget.listing.startDate,
+                          lastDate: widget.listing.endDate!,
+                        );
+                        if (selectedDate != null) {
+                          eventDateController.text = intl.DateFormat('dd-MM-yyyy').format(selectedDate!);
+                          setState(() {});
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: 200,
+                      height: 45,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (selectedDate == null) {
+                            Navigator.of(ctx).pop();
+                            showSnackMessage(title: 'Error', text: 'Please select a booking date', icon: Icons.error);
+                            return;
+                          }
+                          Navigator.of(ctx).pop(true);
+                        },
+                        child: const Text('Book Now'),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                  ],
+                ),
+              ),
+            );
+          });
+        },
+      );
+      if (response != null) {
+        setState(() {
+          _isLoading = true;
+        });
+        ref
+            .read(eventControllerRef)
+            .bookATicket(
+              listing: widget.listing,
+              user: ref.read(loginProviderRef).user,
+              tickets: 1,
+              eventDate: selectedDate!,
+            )
+            .then((value) {
+          setState(() {
+            _isLoading = false;
+          });
+          router.pushReplacement(const UpComingBookingsScreen());
+        }).catchError((e) {
+          setState(() {
+            _isLoading = false;
+          });
+          showSnackMessage(title: 'Error', text: 'Error while booking the event', icon: Icons.error);
+        });
+      }
+    }
   }
 
   void showSnackMessage({required String title, required String text, required IconData icon, Color color = Colors.red, int seconds = 3}) {

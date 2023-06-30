@@ -34,7 +34,7 @@ class LoginProvider extends ChangeNotifier {
       }
       return null;
     }
-    on DioError catch (e) {
+    on DioException catch (e) {
       print(e);
       return null;
     }
@@ -45,7 +45,7 @@ class LoginProvider extends ChangeNotifier {
       final deviceToken = await FirebaseMessaging.instance.getToken();
       await LoginRepository.instance.updateDeviceToken(user.id, deviceToken ?? '');
     }
-    on DioError catch (e) {
+    on DioException catch (e) {
       print(e);
     }
   }
@@ -54,7 +54,7 @@ class LoginProvider extends ChangeNotifier {
     try {
       await LoginRepository.instance.updateDeviceToken(user.id, '');
     }
-    on DioError catch (e) {
+    on DioException catch (e) {
       print(e);
     }
   }
@@ -78,7 +78,8 @@ class LoginProvider extends ChangeNotifier {
         setDeviceToken(_user!);
       }
       return null;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
+      print(e);
       return 'Invalid username or password';
     }
   }
@@ -117,7 +118,7 @@ class LoginProvider extends ChangeNotifier {
         }
       }
       return null;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e);
       return 'Invalid username or password';
     }

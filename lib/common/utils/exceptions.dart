@@ -7,7 +7,7 @@ class MessageException implements Exception {
 
   MessageException(this.message);
 
-  factory MessageException.fromDio(DioError error, [StackTrace? stackTrace]) {
+  factory MessageException.fromDio(DioException error, [StackTrace? stackTrace]) {
     try {
       debugPrint(
         '--------------------- server error response -------------------',

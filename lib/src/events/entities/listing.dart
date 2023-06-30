@@ -16,6 +16,7 @@ class Listing {
   final String bookingStatus;
   final List<String> images;
   final bool alreadyBooked;
+  bool alreadyBookmarked;
 
   bool get isPast => endDate?.isBefore(DateTime.now()) ?? startDate.isBefore(DateTime.now());
 
@@ -30,7 +31,7 @@ class Listing {
 
 //<editor-fold desc="Data Methods">
 
-  const Listing({
+  Listing({
     required this.id,
     required this.title,
     required this.startDate,
@@ -45,6 +46,7 @@ class Listing {
     required this.bookingStatus,
     required this.images,
     required this.alreadyBooked,
+    this.alreadyBookmarked = false,
   });
 
   @override
@@ -65,7 +67,8 @@ class Listing {
           tickets == other.tickets &&
           images == other.images &&
           bookingStatus == other.bookingStatus &&
-          alreadyBooked == other.alreadyBooked);
+          alreadyBooked == other.alreadyBooked &&
+          alreadyBookmarked == other.alreadyBookmarked);
 
   @override
   int get hashCode =>
@@ -82,11 +85,12 @@ class Listing {
       lng.hashCode ^
       tickets.hashCode ^
       bookingStatus.hashCode ^
-      alreadyBooked.hashCode;
+      alreadyBooked.hashCode^
+      alreadyBookmarked.hashCode;
 
   @override
   String toString() {
-    return 'Listing{ id: $id, title: $title, startDate: $startDate, endDate: $endDate, description: $description, privileges: $privileges, deliverables: $deliverables, instagram: $instagram, lat: $lat, lng: $lng, tickets: $tickets, bookingStatus: $bookingStatus, alreadyBooked: $alreadyBooked,}';
+    return 'Listing{ id: $id, title: $title, startDate: $startDate, endDate: $endDate, description: $description, privileges: $privileges, deliverables: $deliverables, instagram: $instagram, lat: $lat, lng: $lng, tickets: $tickets, bookingStatus: $bookingStatus, alreadyBooked: $alreadyBooked,, alreadyBookmarked: $alreadyBookmarked}';
   }
 
   Listing copyWith({
@@ -104,6 +108,7 @@ class Listing {
     String? bookingStatus,
     List<String>? images,
     bool? alreadyBooked,
+    bool? alreadyBookmarked,
   }) {
     return Listing(
       id: id ?? this.id,
@@ -120,6 +125,7 @@ class Listing {
       tickets: tickets ?? this.tickets,
       bookingStatus: bookingStatus ?? this.bookingStatus,
       alreadyBooked: alreadyBooked ?? this.alreadyBooked,
+      alreadyBookmarked: alreadyBookmarked ?? this.alreadyBookmarked,
     );
   }
 
@@ -139,6 +145,7 @@ class Listing {
       'tickets': tickets,
       'bookingStatus': bookingStatus,
       'alreadyBooked': alreadyBooked,
+      'alreadyBookmarked': alreadyBookmarked,
     };
   }
 
@@ -163,6 +170,7 @@ class Listing {
       bookingStatus: map.from('_booking_status', defaultValue: ''),
       images: images,
       alreadyBooked: map['already_booked'],
+      alreadyBookmarked: map['already_bookmarked'],
     );
   }
 

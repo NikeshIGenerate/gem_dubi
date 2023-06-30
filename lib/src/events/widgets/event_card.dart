@@ -12,10 +12,12 @@ class ListingCard extends ConsumerWidget {
   ListingCard({
     Key? key,
     required this.listing,
+    required this.onFavourite,
     required this.refreshEventList,
   }) : super(key: key);
 
   final Listing listing;
+  final void Function() onFavourite;
   final Function refreshEventList;
 
   final PageController controller = PageController();
@@ -45,6 +47,23 @@ class ListingCard extends ConsumerWidget {
             fit: StackFit.expand,
             children: [
               ImagesWidget(images: listing.images, controller: controller),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+                  child: CircleAvatar(
+                    child: InkWell(
+                      onTap: onFavourite,
+                      splashColor: Colors.white,
+                      child: Icon(
+                        listing.alreadyBookmarked ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               // Align(
               //   alignment: Alignment.topRight,
               //   child: Padding(

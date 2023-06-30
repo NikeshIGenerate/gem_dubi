@@ -21,7 +21,7 @@ class BookingHistoryScreen extends HookConsumerWidget {
       if (!loginController.isLoggedIn) return;
 
       Future.delayed(const Duration(milliseconds: 0), () {
-        eventController.getPreviousBooking();
+        eventController.getPreviousBooking(user: loginController.user);
       });
     }, []);
 
@@ -39,7 +39,9 @@ class BookingHistoryScreen extends HookConsumerWidget {
               visible: !eventController.loadingBookings,
               replacement: const LoadingWidget(color: Colors.white),
               child: RefreshWidget(
-                onRefresh: eventController.getPreviousBooking,
+                onRefresh: () async {
+                  await eventController.getPreviousBooking(user: loginController.user);
+                },
                 child: eventController.previousBookings.isEmpty
                     ? const Center(
                         child: Text(

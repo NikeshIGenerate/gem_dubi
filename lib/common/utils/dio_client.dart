@@ -23,8 +23,8 @@ class DioClient {
 
   final Dio dio = Dio(
     BaseOptions(
-      // baseUrl: 'https://igeneratedev.com/gemdubai/wp-json',
-      baseUrl: 'https://gemdubai.app/wp-json',
+      baseUrl: 'https://igeneratedev.com/gemdubai/wp-json',
+      // baseUrl: 'https://gemdubai.app/wp-json',
       headers: {'accept': 'application/json'},
     ),
   );

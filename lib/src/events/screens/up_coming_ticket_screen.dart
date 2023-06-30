@@ -18,7 +18,7 @@ class UpComingBookingsScreen extends HookConsumerWidget {
       if (!loginController.isLoggedIn) return;
 
       Future.delayed(const Duration(milliseconds: 80), () {
-        eventController.getUpComingBooking();
+        eventController.getUpComingBooking(user: loginController.user);
       });
     }, [loginController.isLoggedIn]);
 
@@ -38,7 +38,9 @@ class UpComingBookingsScreen extends HookConsumerWidget {
                   color: Colors.white,
                 ),
                 child: RefreshWidget(
-                  onRefresh: eventController.getUpComingBooking,
+                  onRefresh: () async {
+                    await eventController.getUpComingBooking(user: loginController.user);
+                  },
                   child: eventController.upComingBookings.isEmpty
                       ? const Center(
                           child: Text(
@@ -53,7 +55,7 @@ class UpComingBookingsScreen extends HookConsumerWidget {
                               EventTicketCard(
                                 booking: item,
                                 onCancelBooking: () {
-                                  ref.read(eventControllerRef).cancelBooking(item.id);
+                                  ref.read(eventControllerRef).cancelBooking(item.id, pastEvents: false);
                                 },
                               ),
                           ],

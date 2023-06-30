@@ -34,12 +34,12 @@ ThemeData get darkThemeData => ThemeData(
       primarySwatch: whiteMaterialColor,
       primaryColor: Colors.black,
       primaryColorDark: Colors.black,
-      primaryColorLight: Colors.black,
+      primaryColorLight: Colors.white,
       colorScheme: ColorScheme.fromSeed(
         secondary: Colors.black,
         brightness: Brightness.dark,
-        onPrimary: Colors.white,
-        seedColor: Colors.black,
+        onPrimary: Colors.black,
+        seedColor: Colors.white,
         primary: Colors.white,
       ),
       textTheme: defaultDarkTheme.textTheme.apply(

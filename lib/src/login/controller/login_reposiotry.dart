@@ -41,7 +41,7 @@ class LoginRepository {
       setToken(token);
       log(jsonEncode(response.data));
       return userData.to();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e.response?.data);
       return null;
     }
@@ -57,7 +57,7 @@ class LoginRepository {
         }),
       );
       log(jsonEncode(response.data));
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e);
       rethrow;
     }
@@ -98,7 +98,7 @@ class LoginRepository {
       setToken(response.data?.from('data.jwt'));
 
       return await response.data!.from('data');
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e.response?.data);
       rethrow;
     }
@@ -148,7 +148,7 @@ class LoginRepository {
       );
 
       print(response.data);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e.response?.data);
       rethrow;
     }
@@ -172,7 +172,7 @@ class LoginRepository {
       print(dio.options.headers);
 
       print(response.data);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e.response?.data);
       rethrow;
     }
@@ -190,7 +190,7 @@ class LoginRepository {
         'force': true,
       });
       print(response.data);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print(e.response?.data);
     }
   }

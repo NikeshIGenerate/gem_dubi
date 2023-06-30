@@ -12,6 +12,7 @@ class EventController extends ChangeNotifier {
   final repo = EventsRepository.instance();
 
   bool loading = false;
+  bool isFavouriteLoading = false;
 
   List<Listing> listings = [];
   List<Category> categories = [];
@@ -25,11 +26,12 @@ class EventController extends ChangeNotifier {
   updateSelectedCategory(User user, Category? category) async {
     loading = true;
     selectedCategory = category;
-    listings = [];
     notifyListeners();
-
-    listings = await repo.fetchListing(user: user, category: category?.id);
+    listings = await repo.fetchListing(user: user, category: category!.id);
     listings.sort((a, b) => a.startDate.difference(DateTime.now()).abs().compareTo(b.startDate.difference(DateTime.now()).abs()));
+    if (selectedCategory!.id == 0) {
+      listings = listings.where((element) => element.alreadyBookmarked).toList();
+    }
     loading = false;
     notifyListeners();
   }
@@ -37,28 +39,68 @@ class EventController extends ChangeNotifier {
   Future<void> init(User user) async {
     loading = true;
     categories = await repo.fetchCategories();
+    categories.add(const Category(id: 0, name: 'Favourites', slug: 'favourites', parent: 0, count: 0));
     selectedCategory = selectedCategory ?? categories[0];
     listings = await repo.fetchListing(user: user, category: selectedCategory!.id);
     listings.sort((a, b) => a.startDate.difference(DateTime.now()).abs().compareTo(b.startDate.difference(DateTime.now()).abs()));
+    if (selectedCategory!.id == 0) {
+      listings = listings.where((element) => element.alreadyBookmarked).toList();
+    }
     loading = false;
     notifyListeners();
   }
 
-  Future<void> getUpComingBooking({bool isLoading = false}) async {
+  Future<void> addRemoveFavourite({required String postId, required String userId, required bool status}) async {
+    int index = listings.indexWhere((element) => element.id.toString() == postId);
+    Listing listing = listings.removeAt(index);
+    listing.alreadyBookmarked = status;
+    if (selectedCategory!.id != 0) {
+      listings.insert(index, listing);
+    }
+    notifyListeners();
+    try {
+      bool isSuccess = await repo.addRemoveFavourite(
+        postId: postId,
+        userId: userId,
+        status: status,
+      );
+      if (!isSuccess) {
+        int index = listings.indexWhere((element) => element.id.toString() == postId);
+        Listing listing = listings.removeAt(index);
+        listing.alreadyBookmarked = !status;
+        if (selectedCategory!.id != 0) {
+          listings.insert(index, listing);
+        }
+        notifyListeners();
+      }
+    } catch (err) {
+      int index = listings.indexWhere((element) => element.id.toString() == postId);
+      Listing listing = listings.removeAt(index);
+      listing.alreadyBookmarked = !status;
+      if (selectedCategory!.id != 0) {
+        listings.insert(index, listing);
+      }
+      notifyListeners();
+      print(err);
+      rethrow;
+    }
+  }
+
+  Future<void> getUpComingBooking({required User user, bool isLoading = false}) async {
     loadingBookings = true;
     notifyListeners();
 
-    final response = await repo.getMyBookings(pastEvents: false);
+    final response = await repo.getMyBookings(pastEvents: false, user: user);
     upComingBookings = response.where((element) => element.status == BookingStatus.waiting || element.status == BookingStatus.confirmed || element.status == BookingStatus.paid).toList();
     loadingBookings = false;
     notifyListeners();
   }
 
-  Future<void> getPreviousBooking() async {
+  Future<void> getPreviousBooking({required User user}) async {
     loadingBookings = true;
     notifyListeners();
 
-    final response = await repo.getMyBookings(pastEvents: true);
+    final response = await repo.getMyBookings(pastEvents: true, user: user);
     previousBookings = response;
     loadingBookings = false;
 
@@ -68,12 +110,14 @@ class EventController extends ChangeNotifier {
   Future<void> bookATicket({
     required Listing listing,
     required User user,
+    required DateTime eventDate,
     int tickets = 1,
   }) async {
     await repo.requestBooking(
       userId: user.id,
       listing: listing,
       tickets: tickets,
+      eventDate: eventDate,
     );
   }
 
@@ -81,7 +125,13 @@ class EventController extends ChangeNotifier {
     loadingBookings = true;
     notifyListeners();
 
-    await repo.cancelBooking(id);
+    bool isCancelled = await repo.cancelBooking(id);
+
+    if (!isCancelled) {
+      loadingBookings = false;
+      notifyListeners();
+      return;
+    }
 
     if (pastEvents) {
       previousBookings.removeWhere((element) => element.id == id);

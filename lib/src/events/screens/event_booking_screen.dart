@@ -22,8 +22,7 @@ class EventBookingScreen extends ConsumerWidget with ConsumerTheme {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final notesController = TextEditingController();
-  late final guestsController =
-      TextEditingController(text: guestCount.toString());
+  late final guestsController = TextEditingController(text: guestCount.toString());
   final init = [false];
 
   final formKey = GlobalKey<FormState>();
@@ -57,8 +56,7 @@ class EventBookingScreen extends ConsumerWidget with ConsumerTheme {
               children: [
                 Expanded(
                   child: TextFormField(
-                    validator:
-                        CustomInputValidator(isRequired: true, minLength: 3),
+                    validator: CustomInputValidator(isRequired: true, minLength: 3),
                     controller: nameController,
                     decoration: const InputDecoration(labelText: 'First Name'),
                   ),
@@ -66,8 +64,7 @@ class EventBookingScreen extends ConsumerWidget with ConsumerTheme {
                 const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
-                    validator:
-                        CustomInputValidator(isRequired: true, minLength: 3),
+                    validator: CustomInputValidator(isRequired: true, minLength: 3),
                     controller: lastNameController,
                     decoration: const InputDecoration(labelText: 'Last Name'),
                   ),
@@ -91,8 +88,7 @@ class EventBookingScreen extends ConsumerWidget with ConsumerTheme {
                 isDense: theme.inputDecorationTheme.isDense,
                 labelText: 'Phone Number',
               ),
-              countrySelectorNavigator:
-                  const CountrySelectorNavigator.searchDelegate(
+              countrySelectorNavigator: const CountrySelectorNavigator.searchDelegate(
                 favorites: [
                   IsoCode.US,
                   IsoCode.EG,
@@ -124,6 +120,7 @@ class EventBookingScreen extends ConsumerWidget with ConsumerTheme {
                 ref.read(eventControllerRef).bookATicket(
                       listing: listing,
                       user: ref.read(loginProviderRef).user,
+                      eventDate: DateTime.now(),
                     );
               },
               child: const Text('Complete booking'),
