@@ -14,7 +14,7 @@ class EventController extends ChangeNotifier {
   bool loading = false;
   bool isFavouriteLoading = false;
 
-  List<Listing> listings = [];
+  List<EventListing> listings = [];
   List<Category> categories = [];
 
   bool loadingBookings = false;
@@ -52,7 +52,7 @@ class EventController extends ChangeNotifier {
 
   Future<void> addRemoveFavourite({required String postId, required String userId, required bool status}) async {
     int index = listings.indexWhere((element) => element.id.toString() == postId);
-    Listing listing = listings.removeAt(index);
+    EventListing listing = listings.removeAt(index);
     listing.alreadyBookmarked = status;
     if (selectedCategory!.id != 0) {
       listings.insert(index, listing);
@@ -66,7 +66,7 @@ class EventController extends ChangeNotifier {
       );
       if (!isSuccess) {
         int index = listings.indexWhere((element) => element.id.toString() == postId);
-        Listing listing = listings.removeAt(index);
+        EventListing listing = listings.removeAt(index);
         listing.alreadyBookmarked = !status;
         if (selectedCategory!.id != 0) {
           listings.insert(index, listing);
@@ -75,7 +75,7 @@ class EventController extends ChangeNotifier {
       }
     } catch (err) {
       int index = listings.indexWhere((element) => element.id.toString() == postId);
-      Listing listing = listings.removeAt(index);
+      EventListing listing = listings.removeAt(index);
       listing.alreadyBookmarked = !status;
       if (selectedCategory!.id != 0) {
         listings.insert(index, listing);
@@ -108,7 +108,7 @@ class EventController extends ChangeNotifier {
   }
 
   Future<void> bookATicket({
-    required Listing listing,
+    required EventListing listing,
     required User user,
     required DateTime eventDate,
     int tickets = 1,

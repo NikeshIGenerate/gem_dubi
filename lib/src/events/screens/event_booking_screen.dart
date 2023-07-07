@@ -15,7 +15,7 @@ class EventBookingScreen extends ConsumerWidget with ConsumerTheme {
   });
 
   final int guestCount;
-  final Listing listing;
+  final EventListing listing;
 
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();

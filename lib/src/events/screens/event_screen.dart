@@ -18,7 +18,7 @@ import '../widgets/images_widget.dart';
 class EventScreen extends ConsumerStatefulWidget {
   const EventScreen({Key? key, required this.listing}) : super(key: key);
 
-  final Listing listing;
+  final EventListing listing;
 
   @override
   ConsumerState createState() => _EventScreenState();

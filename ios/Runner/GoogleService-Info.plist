@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>385097477534-lcdtu4dsb14gqhe81nlt10qgpucdvlfi.apps.googleusercontent.com</string>
+	<string>150962081809-1pg3ufrtme970sk2lg83p4nhl2e9uaqo.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.385097477534-lcdtu4dsb14gqhe81nlt10qgpucdvlfi</string>
+	<string>com.googleusercontent.apps.150962081809-1pg3ufrtme970sk2lg83p4nhl2e9uaqo</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>150962081809-sbvcu2hv329bs3684hcji1e6338vidu0.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDDM_1Ldt8ba-U2xsv76SiRAOlPYOk6rsA</string>
+	<string>AIzaSyBMbEVSb71dx9InPBhF9KjahY9n2jvYZF4</string>
 	<key>GCM_SENDER_ID</key>
-	<string>385097477534</string>
+	<string>150962081809</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.gem.mobile</string>
+	<string>com.gem.testmobile</string>
 	<key>PROJECT_ID</key>
-	<string>gem-dubai</string>
+	<string>gem-dubai-4bd71</string>
 	<key>STORAGE_BUCKET</key>
-	<string>gem-dubai.appspot.com</string>
+	<string>gem-dubai-4bd71.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:385097477534:ios:8c2770e9aa969b5ad53a8f</string>
+	<string>1:150962081809:ios:9c6de776e1b161ced7a1b0</string>
 </dict>
 </plist>

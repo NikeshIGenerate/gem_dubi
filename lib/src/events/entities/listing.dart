@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gem_dubi/common/converter/converter.dart';
 
-class Listing {
+class EventListing {
   final int id;
   final String title;
   final DateTime startDate;
@@ -31,7 +31,7 @@ class Listing {
 
 //<editor-fold desc="Data Methods">
 
-  Listing({
+  EventListing({
     required this.id,
     required this.title,
     required this.startDate,
@@ -52,7 +52,7 @@ class Listing {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Listing &&
+      (other is EventListing &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           title == other.title &&
@@ -93,7 +93,7 @@ class Listing {
     return 'Listing{ id: $id, title: $title, startDate: $startDate, endDate: $endDate, description: $description, privileges: $privileges, deliverables: $deliverables, instagram: $instagram, lat: $lat, lng: $lng, tickets: $tickets, bookingStatus: $bookingStatus, alreadyBooked: $alreadyBooked,, alreadyBookmarked: $alreadyBookmarked}';
   }
 
-  Listing copyWith({
+  EventListing copyWith({
     int? id,
     String? title,
     DateTime? startDate,
@@ -110,7 +110,7 @@ class Listing {
     bool? alreadyBooked,
     bool? alreadyBookmarked,
   }) {
-    return Listing(
+    return EventListing(
       id: id ?? this.id,
       title: title ?? this.title,
       images: images ?? this.images,
@@ -149,12 +149,12 @@ class Listing {
     };
   }
 
-  factory Listing.fromMap(Map<String, dynamic> map) {
+  factory EventListing.fromMap(Map<String, dynamic> map) {
     List<String> images = (map['all_gallery_image_src'] as List)
         .map<String>((e) => e[0])
         .toList();
     print('Already Booked : ${map['already_booked']}');
-    return Listing(
+    return EventListing(
       id: map.from('id'),
       title: map.from('listing_title'),
       startDate: map.from('_event_date'),

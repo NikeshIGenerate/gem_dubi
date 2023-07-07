@@ -16,7 +16,7 @@ class ListingCard extends ConsumerWidget {
     required this.refreshEventList,
   }) : super(key: key);
 
-  final Listing listing;
+  final EventListing listing;
   final void Function() onFavourite;
   final Function refreshEventList;
 

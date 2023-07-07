@@ -19,7 +19,7 @@ abstract class CustomConverter<T> {
     DoubleConverter(),
     DateTimeConverter(),
     TimeOfDayConverter(),
-    FromMapConverter<Listing>(Listing.fromMap),
+    FromMapConverter<EventListing>(EventListing.fromMap),
     FromMapConverter<Category>(Category.fromMap),
     FromMapConverter<User>(User.fromMap),
     FromMapConverter<Booking>(Booking.fromMap),

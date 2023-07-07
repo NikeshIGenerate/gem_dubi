@@ -22,7 +22,7 @@ class EventsRepository {
     return _instance!;
   }
 
-  Future<List<Listing>> fetchListing({
+  Future<List<EventListing>> fetchListing({
     required User user,
     int? category,
     String? search,
@@ -36,21 +36,21 @@ class EventsRepository {
         if (perPage != null) 'per_page': perPage,
       });
       log(jsonEncode(response.data));
-      return response.data.toListOf<Listing>(skipInvalid: true);
+      return response.data.toListOf<EventListing>(skipInvalid: true);
     } on DioException catch (e) {
       print(e);
       rethrow;
     }
   }
 
-  Future<List<Listing>> fetchFavouritesListing({
+  Future<List<EventListing>> fetchFavouritesListing({
     required User user,
     int? category,
   }) async {
     try {
       final response = await dio.get<List>('/wp/v2/bookmarked-posts/${user.id}');
       log(jsonEncode(response.data));
-      return response.data.toListOf<Listing>(skipInvalid: true);
+      return response.data.toListOf<EventListing>(skipInvalid: true);
     } on DioException catch (e) {
       print(e);
       return [];
@@ -123,7 +123,7 @@ class EventsRepository {
 
   Future<void> requestBooking({
     required String userId,
-    required Listing listing,
+    required EventListing listing,
     required int tickets,
     required DateTime eventDate,
   }) async {

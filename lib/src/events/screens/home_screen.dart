@@ -4,6 +4,7 @@ import 'package:gem_dubi/common/widgets/loading_widget.dart';
 import 'package:gem_dubi/const/resource.dart';
 import 'package:gem_dubi/src/events/controllers/events_controller.dart';
 import 'package:gem_dubi/src/events/entities/category.dart';
+import 'package:gem_dubi/src/events/entities/listing.dart';
 import 'package:gem_dubi/src/events/widgets/event_card.dart';
 import 'package:gem_dubi/src/login/controller/login_controller.dart';
 import 'package:gem_dubi/src/login/user.dart';
@@ -19,10 +20,42 @@ class EventsHomeScreen extends StatefulHookConsumerWidget {
 class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with SingleTickerProviderStateMixin {
   bool _isInit = true;
   bool _isLoading = true;
+  bool _isSearching = false;
   User? _user;
   Category? _currentCategory;
 
   TabController? _tabController;
+
+  List<EventListing> _searchEventsList = [];
+  final _searchController = TextEditingController();
+
+  void _searchEvents() {
+    _searchEventsList = ref.watch(eventControllerRef).listings.where((element) => element.title.toLowerCase().contains(_searchController.text.trim().toLowerCase())).toList();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      if (_searchController.text.trim().isNotEmpty) {
+        _isSearching = true;
+        _searchEvents();
+      } else {
+        setState(() {
+          _isSearching = false;
+          _searchEventsList.clear();
+        });
+        FocusScope.of(context).unfocus();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -69,9 +102,42 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
         ),
         bottom: _tabController != null
             ? PreferredSize(
-                preferredSize: Size(MediaQuery.of(context).size.width, kToolbarHeight),
+                preferredSize: Size(MediaQuery.of(context).size.width, (kToolbarHeight * 2) + 10),
                 child: Column(
                   children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      child: TextFormField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          suffix: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 600),
+                            child: _searchController.text.trim().isNotEmpty
+                                ? IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _searchController.clear();
+                                        _isSearching = false;
+                                        _searchEventsList.clear();
+                                      });
+                                      FocusScope.of(context).unfocus();
+                                    },
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
                     Container(
                       height: 40,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
