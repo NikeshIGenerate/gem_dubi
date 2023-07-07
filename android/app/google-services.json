@@ -1,56 +1,57 @@
 {
   "project_info": {
-    "project_number": "150962081809",
-    "project_id": "gem-dubai-4bd71",
-    "storage_bucket": "gem-dubai-4bd71.appspot.com"
+    "project_number": "385097477534",
+    "project_id": "gem-dubai",
+    "storage_bucket": "gem-dubai.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:150962081809:android:85c91ada55d754dbd7a1b0",
+        "mobilesdk_app_id": "1:385097477534:android:72f02102c1ece49ad53a8f",
         "android_client_info": {
           "package_name": "com.gem.mobile"
         }
       },
       "oauth_client": [
         {
-          "client_id": "150962081809-sbvcu2hv329bs3684hcji1e6338vidu0.apps.googleusercontent.com",
+          "client_id": "385097477534-75a9bf952rt7noshjiijofbp2a10lrer.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.gem.mobile",
-            "certificate_hash": "326b51081a049378af287bef638f376e9b7a4789"
+            "certificate_hash": "c7543927390ec29d31110e11bace4d23fb310104"
           }
         },
         {
-          "client_id": "150962081809-t7bi8nnadc9960dfelpt3ct61krq4jim.apps.googleusercontent.com",
+          "client_id": "385097477534-ojvijhifpfl50u0gav1na6ujlaq0vqgn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.gem.mobile",
-            "certificate_hash": "96698b95faaf24028f7ce5fded29cfb3af5e1e54"
+            "certificate_hash": "65bad219f6de78459619fdb5f0942ac48e9791bd"
           }
         },
         {
-          "client_id": "150962081809-fhsjviago4rece7miqsoe054ad2h6ci4.apps.googleusercontent.com",
+          "client_id": "385097477534-qjui19arfnj0u6j1nut4vrkk2bu0pc94.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBx_p9sDsKP_cNxMyBJtNfmnHNCi5oDDG8"
+          "current_key": "AIzaSyC4EZ5SczU_VHHaXqbjhoifNsgOLGzonjs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "150962081809-fhsjviago4rece7miqsoe054ad2h6ci4.apps.googleusercontent.com",
+              "client_id": "385097477534-qjui19arfnj0u6j1nut4vrkk2bu0pc94.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "150962081809-1pg3ufrtme970sk2lg83p4nhl2e9uaqo.apps.googleusercontent.com",
+              "client_id": "385097477534-am78r2rpiqpj32tp3rho96a9vv0bo137.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.gem.testmobile"
+                "bundle_id": "com.gem.mobile",
+                "app_store_id": "6444259105"
               }
             }
           ]

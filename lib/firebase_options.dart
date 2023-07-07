@@ -50,21 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBx_p9sDsKP_cNxMyBJtNfmnHNCi5oDDG8',
-    appId: '1:150962081809:android:85c91ada55d754dbd7a1b0',
-    messagingSenderId: '150962081809',
-    projectId: 'gem-dubai-4bd71',
-    storageBucket: 'gem-dubai-4bd71.appspot.com',
+    apiKey: 'AIzaSyC4EZ5SczU_VHHaXqbjhoifNsgOLGzonjs',
+    appId: '1:385097477534:android:72f02102c1ece49ad53a8f',
+    messagingSenderId: '385097477534',
+    projectId: 'gem-dubai',
+    storageBucket: 'gem-dubai.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBMbEVSb71dx9InPBhF9KjahY9n2jvYZF4',
-    appId: '1:150962081809:ios:9c6de776e1b161ced7a1b0',
-    messagingSenderId: '150962081809',
-    projectId: 'gem-dubai-4bd71',
-    storageBucket: 'gem-dubai-4bd71.appspot.com',
-    androidClientId: '150962081809-sbvcu2hv329bs3684hcji1e6338vidu0.apps.googleusercontent.com',
-    iosClientId: '150962081809-1pg3ufrtme970sk2lg83p4nhl2e9uaqo.apps.googleusercontent.com',
-    iosBundleId: 'com.gem.testmobile',
+    apiKey: 'AIzaSyDDM_1Ldt8ba-U2xsv76SiRAOlPYOk6rsA',
+    appId: '1:385097477534:ios:8c2770e9aa969b5ad53a8f',
+    messagingSenderId: '385097477534',
+    projectId: 'gem-dubai',
+    storageBucket: 'gem-dubai.appspot.com',
+    androidClientId: '385097477534-75a9bf952rt7noshjiijofbp2a10lrer.apps.googleusercontent.com',
+    iosClientId: '385097477534-am78r2rpiqpj32tp3rho96a9vv0bo137.apps.googleusercontent.com',
+    iosBundleId: 'com.gem.mobile',
   );
 }
