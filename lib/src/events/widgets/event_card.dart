@@ -26,6 +26,7 @@ class ListingCard extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return GestureDetector(
       onTap: () {
+        FocusScope.of(context).unfocus();
         if (ref.read(loginProviderRef).isLoggedIn) {
           router.push(EventScreen(listing: listing)).then((value) {
             refreshEventList();

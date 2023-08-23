@@ -5,13 +5,16 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gem_dubi/common/converter/converter.dart';
 import 'package:gem_dubi/common/utils/app_router.dart';
+import 'package:gem_dubi/common/utils/dio_client.dart';
 import 'package:gem_dubi/common/utils/share_preferences.dart';
 import 'package:gem_dubi/src/login/controller/login_reposiotry.dart';
 import 'package:gem_dubi/src/login/screens/login_screen.dart';
 import 'package:gem_dubi/src/login/user.dart';
 
 final loginProviderRef = ChangeNotifierProvider((ref) => LoginProvider());
+const _kTokenKey = 'LoginRepository.user_token';
 
 class LoginProvider extends ChangeNotifier {
   User? _user;
@@ -33,8 +36,7 @@ class LoginProvider extends ChangeNotifier {
         return _user;
       }
       return null;
-    }
-    on DioException catch (e) {
+    } on DioException catch (e) {
       print(e);
       return null;
     }
@@ -44,8 +46,7 @@ class LoginProvider extends ChangeNotifier {
     try {
       final deviceToken = await FirebaseMessaging.instance.getToken();
       await LoginRepository.instance.updateDeviceToken(user.id, deviceToken ?? '');
-    }
-    on DioException catch (e) {
+    } on DioException catch (e) {
       print(e);
     }
   }
@@ -53,8 +54,7 @@ class LoginProvider extends ChangeNotifier {
   Future<void> resetDeviceToken(User user) async {
     try {
       await LoginRepository.instance.updateDeviceToken(user.id, '');
-    }
-    on DioException catch (e) {
+    } on DioException catch (e) {
       print(e);
     }
   }
@@ -93,7 +93,7 @@ class LoginProvider extends ChangeNotifier {
     required String instagram,
   }) async {
     try {
-      _user = await LoginRepository.instance.register(
+      final userData = await LoginRepository.instance.register(
         email: email,
         firstName: firstName,
         password: password,
@@ -101,26 +101,44 @@ class LoginProvider extends ChangeNotifier {
         phone: phone,
         instagram: instagram,
       );
-      if (_user != null) {
-        await LocalStorageRepo.instance().setString(
-          LoginRepository.kEmailKey,
-          email,
-        );
-        await LocalStorageRepo.instance().setString(
-          LoginRepository.kPasswordKey,
-          password,
-        );
-      }
-      if (_user != null) {
-        if (_user!.status == UserState.approved) {
-          // updateOneSignalUser();
-          setDeviceToken(_user!);
+      if (userData != null) {
+        if (userData.containsKey("msg")) {
+          return userData['msg'] as String;
+        }
+        _user = userData.from('data');
+        if (_user != null) {
+          setToken(userData.from('data.jwt'));
+          await LocalStorageRepo.instance().setString(
+            LoginRepository.kEmailKey,
+            email,
+          );
+          await LocalStorageRepo.instance().setString(
+            LoginRepository.kPasswordKey,
+            password,
+          );
+          if (_user!.status == UserState.approved) {
+            // updateOneSignalUser();
+            setDeviceToken(_user!);
+          }
         }
       }
       return null;
     } on DioException catch (e) {
       print(e);
       return 'Invalid username or password';
+    }
+  }
+
+  Future<void> setToken(String? value) async {
+    if (value != null) {
+      await LocalStorageRepo.instance().setString(
+        _kTokenKey,
+        value,
+      );
+      DioClient.instance.setToken(value);
+    } else {
+      await LocalStorageRepo.instance().remove(_kTokenKey);
+      DioClient.instance.removeToken();
     }
   }
 

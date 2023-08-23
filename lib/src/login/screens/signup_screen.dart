@@ -364,6 +364,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                 backgroundColor: Colors.white,
                               ),
                               onPressed: () async {
+                                FocusScope.of(context).unfocus();
                                 if (!_formKey.currentState!.validate()) {
                                   return;
                                 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:gem_dubi/common/converter/converter.dart';
@@ -75,7 +76,7 @@ class LoginRepository {
     return await response.data!.to();
   }
 
-  Future<User> register({
+  Future<Map<String, dynamic>?> register({
     required String email,
     required String password,
     String? firstName,
@@ -84,7 +85,7 @@ class LoginRepository {
     String? instagram,
   }) async {
     try {
-      final response = await dio.post<Map>(
+      final response = await dio.post(
         '/custom-plugin/usermanage',
         data: {
           'email': email,
@@ -95,9 +96,8 @@ class LoginRepository {
           if (instagram != null) 'social': {'instagram': instagram},
         },
       );
-      setToken(response.data?.from('data.jwt'));
-
-      return await response.data!.from('data');
+      log(jsonEncode(response.data));
+      return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       print(e.response?.data);
       rethrow;

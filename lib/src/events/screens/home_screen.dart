@@ -30,7 +30,7 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
   final _searchController = TextEditingController();
 
   void _searchEvents() {
-    _searchEventsList = ref.watch(eventControllerRef).listings.where((element) => element.title.toLowerCase().contains(_searchController.text.trim().toLowerCase())).toList();
+    _searchEventsList = ref.watch(eventControllerRef).listings.where((element) => element.title.toLowerCase().contains(_searchController.text.toLowerCase())).toList();
     setState(() {});
   }
 
@@ -118,8 +118,8 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
                           suffix: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 600),
                             child: _searchController.text.trim().isNotEmpty
-                                ? IconButton(
-                                    onPressed: () {
+                                ? GestureDetector(
+                                    onTap: () {
                                       setState(() {
                                         _searchController.clear();
                                         _isSearching = false;
@@ -127,7 +127,7 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
                                       });
                                       FocusScope.of(context).unfocus();
                                     },
-                                    icon: const Icon(
+                                    child: const Icon(
                                       Icons.close,
                                       color: Colors.white,
                                     ),
@@ -138,26 +138,31 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: TabBar(
-                        controller: _tabController,
-                        tabs: eventController.categories.map((e) => Tab(text: e.name)).toList(),
-                        indicator: BoxDecoration(
-                          color: theme.cardColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        isScrollable: true,
-                        indicatorPadding: EdgeInsets.zero,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        labelPadding: const EdgeInsets.symmetric(horizontal: 20),
-                        onTap: (index) {
-                          _user = ref.read(loginProviderRef).user;
-                          _currentCategory = eventController.categories[index];
-                          eventController.updateSelectedCategory(_user!, eventController.categories[index]);
-                        },
-                      ),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 600),
+                      child: !_isSearching
+                          ? Container(
+                              height: 40,
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: TabBar(
+                                controller: _tabController,
+                                tabs: eventController.categories.map((e) => Tab(text: e.name)).toList(),
+                                indicator: BoxDecoration(
+                                  color: theme.cardColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                isScrollable: true,
+                                indicatorPadding: EdgeInsets.zero,
+                                indicatorSize: TabBarIndicatorSize.tab,
+                                labelPadding: const EdgeInsets.symmetric(horizontal: 20),
+                                onTap: (index) {
+                                  _user = ref.read(loginProviderRef).user;
+                                  _currentCategory = eventController.categories[index];
+                                  eventController.updateSelectedCategory(_user!, eventController.categories[index]);
+                                },
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ),
                   ],
                 ),
@@ -166,16 +171,21 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
         flexibleSpace: const BlurBackground(),
       ),
       extendBodyBehindAppBar: true,
-      body: !_isLoading && _tabController != null
-          ? TabBarView(
-              controller: _tabController,
-              children: eventController.categories.map((e) {
-                return _buildEventList(eventController, theme);
-              }).toList(),
-            )
-          : const LoadingWidget(
-              color: Colors.white60,
-            ),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 600),
+        child: !_isLoading && _tabController != null
+            ? !_isSearching
+                ? TabBarView(
+                    controller: _tabController,
+                    children: eventController.categories.map((e) {
+                      return _buildEventList(eventController, theme);
+                    }).toList(),
+                  )
+                : _buildSearchEventList(eventController, theme)
+            : const LoadingWidget(
+                color: Colors.white60,
+              ),
+      ),
     );
   }
 
@@ -221,5 +231,44 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
                   textAlign: TextAlign.center,
                 ),
               );
+  }
+
+  Widget _buildSearchEventList(EventController eventController, ThemeData theme) {
+    return _searchEventsList.isNotEmpty
+        ? ListView.builder(
+            itemBuilder: (context, index) {
+              final searchedListings = _searchEventsList[index];
+              return ListingCard(
+                listing: searchedListings,
+                onFavourite: () {
+                  _user = ref.read(loginProviderRef).user;
+                  eventController.addRemoveFavourite(
+                    postId: searchedListings.id.toString(),
+                    userId: _user!.id,
+                    status: !searchedListings.alreadyBookmarked,
+                  );
+                },
+                refreshEventList: () {
+                  setState(() {
+                    _isSearching = false;
+                    _searchController.clear();
+                    _isLoading = true;
+                  });
+                  _user = ref.read(loginProviderRef).user;
+                  eventController.updateSelectedCategory(_user!, _currentCategory);
+                  setState(() {
+                    _isLoading = false;
+                  });
+                },
+              );
+            },
+            itemCount: _searchEventsList.length,
+          )
+        : const Center(
+            child: Text(
+              'empty\nNo events',
+              textAlign: TextAlign.center,
+            ),
+          );
   }
 }
