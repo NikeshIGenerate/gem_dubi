@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -7,16 +8,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gem_dubi/common/constants.dart';
+import 'package:gem_dubi/common/models/local_notification.dart';
 import 'package:gem_dubi/common/screens/splash_screen.dart';
 import 'package:gem_dubi/common/utils/app_router.dart';
+import 'package:gem_dubi/common/utils/local_db.dart';
 import 'package:gem_dubi/common/utils/theme.dart';
 import 'package:gem_dubi/firebase_options.dart';
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await LocalDatabaseProvider.initDB();
   print('Handling a background message ${message.messageId}');
+  print(message);
+  print(message.notification);
+  print(message.data.toString());
+  print(message.notification?.android);
+  RemoteNotification? notification = message.notification;
+  await LocalDatabaseProvider.insertNotification(
+    LocalNotification(
+      id: notification.hashCode,
+      title: notification!.title!,
+      body: notification.body!,
+      createdAt: DateTime.now(),
+    ),
+  );
 }
 
 /// Create a [AndroidNotificationChannel] for heads up notifications
@@ -63,6 +82,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    LocalDatabaseProvider.initDB();
+    signInUsingEmailPassword();
     var initializationSettingAndroid = const AndroidInitializationSettings('@drawable/ic_stat_name');
     var initializationSettingIOS = DarwinInitializationSettings(
         requestAlertPermission: true,
@@ -93,6 +114,14 @@ class _MyAppState extends State<MyApp> {
       print(message.data.toString());
       print(message.notification?.android);
       RemoteNotification? notification = message.notification;
+      await LocalDatabaseProvider.insertNotification(
+        LocalNotification(
+          id: notification.hashCode,
+          title: notification!.title!,
+          body: notification.body!,
+          createdAt: DateTime.now(),
+        ),
+      );
       AndroidNotification? android = message.notification?.android;
       if (notification != null && android != null && !kIsWeb) {
         flutterLocalNotificationsPlugin.show(
@@ -135,5 +164,22 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
     );
+  }
+
+  static Future<void> signInUsingEmailPassword() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    try {
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+        email: kFirebaseEmail,
+        password: kFirebasePassword,
+      );
+      print('SUCCESSFULLY SIGNIN ${userCredential.user}');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided.');
+      }
+    }
   }
 }

@@ -1,1 +1,11 @@
 const kGoogleApiKey = 'AIzaSyDoe5rO242ClYLGZtHIS68wV471aJCLnEc';
+const pushNotificationUrl = 'https://pushnotifications-r6e6tyceaa-uc.a.run.app';
+const pushNotificationByTopicUrl = 'https://pushnotificationsbytopic-r6e6tyceaa-uc.a.run.app';
+const kAdminId = '36';
+const kAdminName = 'GEM Dubai';
+const kAdminEmail = 'hello@gemdubai.app';
+// const kFirebaseEmail = 'engineer.dotinfotech@gmail.com';
+// const kFirebasePassword = 'GemDubai@2023';
+const kFirebaseEmail = 'xu.david.ming@gmail.com';
+const kFirebasePassword = 'GemDubai@2023';
+// const kAdminEmail = 'hello@gemdubai.app';

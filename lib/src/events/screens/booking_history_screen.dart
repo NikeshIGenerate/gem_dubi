@@ -9,7 +9,9 @@ import 'package:gem_dubi/src/login/controller/login_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class BookingHistoryScreen extends HookConsumerWidget {
-  const BookingHistoryScreen({Key? key}) : super(key: key);
+  final bool isMenu;
+
+  const BookingHistoryScreen(this.isMenu, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
@@ -27,10 +29,12 @@ class BookingHistoryScreen extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('My History'),
-        flexibleSpace: const BlurBackground(),
-      ),
+      appBar: isMenu
+          ? AppBar(
+              title: const Text('My History'),
+              flexibleSpace: const BlurBackground(),
+            )
+          : null,
       body: !loginController.isLoggedIn
           ? const Center(
               child: Text('Login to show your bookings'),

@@ -6,7 +6,7 @@ import 'package:gem_dubi/common/converter/converter.dart';
 import 'package:gem_dubi/src/events/entities/booking.dart';
 import 'package:gem_dubi/src/events/entities/category.dart';
 import 'package:gem_dubi/src/events/entities/listing.dart';
-import 'package:gem_dubi/src/login/user.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 import 'package:intl/intl.dart';
 
 import '../../../common/utils/dio_client.dart';
@@ -23,7 +23,7 @@ class EventsRepository {
   }
 
   Future<List<EventListing>> fetchListing({
-    required User user,
+    required GuestUser user,
     int? category,
     String? search,
     int? page,
@@ -44,7 +44,7 @@ class EventsRepository {
   }
 
   Future<List<EventListing>> fetchFavouritesListing({
-    required User user,
+    required GuestUser user,
     int? category,
   }) async {
     try {
@@ -98,7 +98,7 @@ class EventsRepository {
     int count = 100,
     int page = 0,
     bool pastEvents = true,
-    required User user,
+    required GuestUser user,
   }) async {
     try {
       final response = await dio.get<List>(

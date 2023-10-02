@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -10,22 +11,22 @@ import 'package:gem_dubi/common/utils/app_router.dart';
 import 'package:gem_dubi/common/utils/dio_client.dart';
 import 'package:gem_dubi/common/utils/share_preferences.dart';
 import 'package:gem_dubi/src/login/controller/login_reposiotry.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 import 'package:gem_dubi/src/login/screens/login_screen.dart';
-import 'package:gem_dubi/src/login/user.dart';
 
 final loginProviderRef = ChangeNotifierProvider((ref) => LoginProvider());
 const _kTokenKey = 'LoginRepository.user_token';
 
 class LoginProvider extends ChangeNotifier {
-  User? _user;
+  GuestUser? _user;
 
-  User get user => _user!;
+  GuestUser get user => _user!;
 
-  User? get userNullable => _user;
+  GuestUser? get userNullable => _user;
 
   bool get isLoggedIn => _user != null;
 
-  Future<User?> init() async {
+  Future<GuestUser?> init() async {
     //fetch initial user if there are any
     try {
       final email = await LocalStorageRepo.instance().getString(LoginRepository.kEmailKey);
@@ -42,18 +43,31 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setDeviceToken(User user) async {
+  Future<void> setDeviceToken(GuestUser user) async {
     try {
       final deviceToken = await FirebaseMessaging.instance.getToken();
       await LoginRepository.instance.updateDeviceToken(user.id, deviceToken ?? '');
+      FirebaseFirestore.instance.collection('users-availability').doc(user.id).get();
+      await FirebaseFirestore.instance.collection('users-availability').doc(user.id).set({
+        'deviceToken': deviceToken,
+      });
+      FirebaseFirestore.instance.collection('users-availability').doc(user.id).collection('availability').doc('status').set({
+        'status': true,
+      });
     } on DioException catch (e) {
       print(e);
     }
   }
 
-  Future<void> resetDeviceToken(User user) async {
+  Future<void> resetDeviceToken(GuestUser user) async {
     try {
       await LoginRepository.instance.updateDeviceToken(user.id, '');
+      FirebaseFirestore.instance.collection('users-availability').doc(user.id).collection('availability').doc('status').set({
+        'status': false,
+      });
+      await FirebaseFirestore.instance.collection('users-availability').doc(user.id).set({
+        'deviceToken': '',
+      });
     } on DioException catch (e) {
       print(e);
     }
@@ -163,7 +177,7 @@ class LoginProvider extends ChangeNotifier {
       image: image,
       tagTypeId: _user!.tagTypeId!,
     );
-    _user = User(
+    _user = GuestUser(
       id: user.id,
       email: user.email,
       displayName: tempUser.displayName,

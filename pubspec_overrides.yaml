@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: flutter_sheet_localization,flutter_sheet_localization_generator,localization_builder,template_string,phone_form_field,google_maps_place_picker_cooop,keyboard_avoider,geoflutterfire2,rich_text_view,flutter_input_mentions,time_picker_spinner_pop_up,intl,avatar_stack
+dependency_overrides:
+  dash_chat_2:
+    path: packages/Dash-Chat-2

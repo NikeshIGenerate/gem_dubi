@@ -14,7 +14,7 @@ class EnumConverter<T> extends CustomConverter<T> {
 
   static String _convertName(dynamic v) {
     try {
-      return v.name.toString().toLowerCase();
+      return v.displayName.toString().toLowerCase();
     } catch (e) {
       return v.toString().split('.').last;
     }

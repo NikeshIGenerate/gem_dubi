@@ -1,13 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as fdp;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gem_dubi/common/utils/app_router.dart';
 import 'package:gem_dubi/common/utils/state_theme.dart';
 import 'package:gem_dubi/src/events/controllers/events_controller.dart';
 import 'package:gem_dubi/src/events/entities/listing.dart';
-import 'package:gem_dubi/src/events/screens/up_coming_ticket_screen.dart';
+import 'package:gem_dubi/src/events/screens/bookings_screen.dart';
 import 'package:gem_dubi/src/events/widgets/place_image.dart';
 import 'package:gem_dubi/src/login/controller/login_controller.dart';
 import 'package:intl/intl.dart' as intl;
@@ -39,6 +40,8 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
       }
     });
     print(widget.listing);
+    print(widget.listing.startDate);
+    print(widget.listing.endDate);
   }
 
   @override
@@ -340,7 +343,7 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                                   setState(() {
                                     _isLoading = false;
                                   });
-                                  router.pushReplacement(const UpComingBookingsScreen());
+                                  router.pushReplacement(const BookingsScreen());
                                 }).catchError((e) {
                                   setState(() {
                                     _isLoading = false;
@@ -367,10 +370,11 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
   void bookTicket() async {
     eventDateController.text = '';
     DateTime? selectedDate;
+    print(widget.listing.multiDayEvent);
     if (widget.listing.multiDayEvent) {
       var response = await showModalBottomSheet(
         context: context,
-        backgroundColor: Colors.black,
+        backgroundColor: Theme.of(context).cardColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30),
@@ -389,7 +393,9 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                          },
                           icon: const Icon(
                             Icons.close,
                             color: Colors.white,
@@ -401,30 +407,49 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                     TextFormField(
                       controller: eventDateController,
                       decoration: InputDecoration(
-                        fillColor: Colors.black,
                         labelText: 'Select Booking Date',
-                        labelStyle: TextStyle(color: Colors.white),
+                        labelStyle: const TextStyle(color: Colors.white),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.white),
+                          borderSide: const BorderSide(color: Colors.white),
                         ),
-                        focusedBorder:  OutlineInputBorder(
+                        focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.white),
+                          borderSide: const BorderSide(color: Colors.white),
                         ),
                       ),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       showCursor: false,
                       readOnly: true,
                       onTap: () async {
-                        selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: widget.listing.startDate,
-                          firstDate: widget.listing.startDate,
-                          lastDate: widget.listing.endDate!,
+
+                        selectedDate = await fdp.DatePicker.showDateTimePicker(
+                          context,
+                          showTitleActions: true,
+                          theme: const fdp.DatePickerTheme(
+                            doneStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            )
+                          ),
+                          minTime: widget.listing.startDate,
+                          maxTime: widget.listing.endDate,
+                          onChanged: (date) {
+                            print('change $date');
+                          },
+                          onConfirm: (date) {
+                            print('confirm $date');
+                            return date;
+                          },
+                          onCancel: () {
+                            return null;
+                          },
+                          currentTime: selectedDate ?? widget.listing.startDate,
+                          locale: fdp.LocaleType.en,
                         );
+
                         if (selectedDate != null) {
-                          eventDateController.text = intl.DateFormat('dd-MM-yyyy').format(selectedDate!);
+                          eventDateController.text = '${intl.DateFormat('dd MMM yyyy').format(selectedDate!)} at ${intl.DateFormat('hh:mm a').format(selectedDate!).toLowerCase()}';
                           setState(() {});
                         }
                       },
@@ -435,8 +460,8 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
                       height: 45,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
                           elevation: 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
@@ -477,7 +502,7 @@ class _EventScreenState extends ConsumerState<EventScreen> with ConsumerStateThe
           setState(() {
             _isLoading = false;
           });
-          router.pushReplacement(const UpComingBookingsScreen());
+          router.pushReplacement(const BookingsScreen());
         }).catchError((e) {
           setState(() {
             _isLoading = false;

@@ -8,7 +8,9 @@ import 'package:gem_dubi/src/login/controller/login_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class UpComingBookingsScreen extends HookConsumerWidget {
-  const UpComingBookingsScreen({Key? key}) : super(key: key);
+  final bool isMenu;
+
+  const UpComingBookingsScreen(this.isMenu, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
@@ -24,9 +26,11 @@ class UpComingBookingsScreen extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('My Bookings'),
-      ),
+      appBar: isMenu
+          ? AppBar(
+              title: const Text('My Bookings'),
+            )
+          : null,
       body: SafeArea(
         child: !loginController.isLoggedIn
             ? const Center(

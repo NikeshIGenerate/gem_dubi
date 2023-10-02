@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: dash_chat_2
+dependency_overrides:
+  dash_chat_2:
+    path: ..

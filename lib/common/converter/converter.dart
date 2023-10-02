@@ -4,7 +4,7 @@ import 'package:gem_dubi/common/converter/enum_converter.dart';
 import 'package:gem_dubi/src/events/entities/booking.dart';
 import 'package:gem_dubi/src/events/entities/category.dart';
 import 'package:gem_dubi/src/events/entities/listing.dart';
-import 'package:gem_dubi/src/login/user.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 
 import 'base_converters.dart';
 import 'convert_exceptions.dart';
@@ -21,7 +21,7 @@ abstract class CustomConverter<T> {
     TimeOfDayConverter(),
     FromMapConverter<EventListing>(EventListing.fromMap),
     FromMapConverter<Category>(Category.fromMap),
-    FromMapConverter<User>(User.fromMap),
+    FromMapConverter<GuestUser>(GuestUser.fromMap),
     FromMapConverter<Booking>(Booking.fromMap),
     EnumConverter<BookingStatus>(
       BookingStatus.values,

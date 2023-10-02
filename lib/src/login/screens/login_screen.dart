@@ -1,10 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gem_dubi/common/constants.dart';
 import 'package:gem_dubi/common/screens/home_screen_layout.dart';
 import 'package:gem_dubi/common/utils/app_router.dart';
 import 'package:gem_dubi/common/utils/theme.dart';
 import 'package:gem_dubi/const/resource.dart';
+import 'package:gem_dubi/src/chat/conversation_list_screen.dart';
 import 'package:gem_dubi/src/login/controller/login_controller.dart';
 import 'package:gem_dubi/src/login/screens/forgot_password_screen.dart';
 import 'package:gem_dubi/src/login/screens/signup_screen.dart';
@@ -283,7 +285,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           _isLoading = false;
                                         });
                                         if (isLogin == null) {
-                                          router.replaceAllWith(const HomeScreenLayout());
+                                          if (_emailTextEditingController.text.trim() == kAdminEmail) {
+                                            router.replaceAllWith(const ConversationListScreen());
+                                          } else {
+                                            router.replaceAllWith(const HomeScreenLayout());
+                                          }
                                         } else {
                                           ScaffoldMessenger.of(context).removeCurrentSnackBar();
                                           ScaffoldMessenger.of(context).showSnackBar(

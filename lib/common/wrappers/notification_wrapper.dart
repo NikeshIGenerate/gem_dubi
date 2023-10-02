@@ -1,6 +1,6 @@
 // import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-import '../../src/login/user.dart';
+import '../../src/login/guest_user.dart';
 
 class RemoteNotificationWrapper {
   static final instance = RemoteNotificationWrapper();
@@ -11,7 +11,7 @@ class RemoteNotificationWrapper {
   }
 
   setUser(
-    User? user, {
+    GuestUser? user, {
     String? language,
   }) {
     if (user == null) return;

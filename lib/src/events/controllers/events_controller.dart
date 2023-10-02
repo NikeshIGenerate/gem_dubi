@@ -4,7 +4,7 @@ import 'package:gem_dubi/src/events/controllers/event_repository.dart';
 import 'package:gem_dubi/src/events/entities/booking.dart';
 import 'package:gem_dubi/src/events/entities/category.dart';
 import 'package:gem_dubi/src/events/entities/listing.dart';
-import 'package:gem_dubi/src/login/user.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 
 final eventControllerRef = ChangeNotifierProvider((ref) => EventController());
 
@@ -23,7 +23,7 @@ class EventController extends ChangeNotifier {
 
   Category? selectedCategory;
 
-  updateSelectedCategory(User user, Category? category) async {
+  updateSelectedCategory(GuestUser user, Category? category) async {
     loading = true;
     selectedCategory = category;
     notifyListeners();
@@ -36,7 +36,7 @@ class EventController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> init(User user) async {
+  Future<void> init(GuestUser user) async {
     loading = true;
     categories = await repo.fetchCategories();
     categories.add(const Category(id: 0, name: 'Favourites', slug: 'favourites', parent: 0, count: 0));
@@ -86,17 +86,20 @@ class EventController extends ChangeNotifier {
     }
   }
 
-  Future<void> getUpComingBooking({required User user, bool isLoading = false}) async {
+  Future<void> getUpComingBooking({required GuestUser user, bool isLoading = false}) async {
     loadingBookings = true;
     notifyListeners();
 
     final response = await repo.getMyBookings(pastEvents: false, user: user);
-    upComingBookings = response.where((element) => element.status == BookingStatus.waiting || element.status == BookingStatus.confirmed || element.status == BookingStatus.paid).toList();
+    upComingBookings = response.where((element) {
+      print(element.status);
+      return element.status == BookingStatus.waiting || element.status == BookingStatus.confirmed || element.status == BookingStatus.paid;
+    }).toList();
     loadingBookings = false;
     notifyListeners();
   }
 
-  Future<void> getPreviousBooking({required User user}) async {
+  Future<void> getPreviousBooking({required GuestUser user}) async {
     loadingBookings = true;
     notifyListeners();
 
@@ -109,7 +112,7 @@ class EventController extends ChangeNotifier {
 
   Future<void> bookATicket({
     required EventListing listing,
-    required User user,
+    required GuestUser user,
     required DateTime eventDate,
     int tickets = 1,
   }) async {

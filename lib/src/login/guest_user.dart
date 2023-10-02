@@ -1,8 +1,9 @@
 import 'package:gem_dubi/common/converter/converter.dart';
+import 'package:gem_dubi/src/chat/entities/participant_model.dart';
 
 enum UserState { pending, approved, denied }
 
-class User {
+class GuestUser {
   final String id;
   final String email;
   final String displayName;
@@ -25,7 +26,7 @@ class User {
 
 //<editor-fold desc="Data Methods">
 
-  const User({
+  const GuestUser({
     required this.id,
     required this.email,
     required this.displayName,
@@ -42,7 +43,7 @@ class User {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is User &&
+      (other is GuestUser &&
           runtimeType == other.runtimeType &&
           id == other.id &&
           email == other.email &&
@@ -64,7 +65,7 @@ class User {
     return 'User{ id: $id, email: $email, displayName: $displayName, userLogin: $userLogin, token: $token, phone: $phone,}';
   }
 
-  User copyWith({
+  GuestUser copyWith({
     String? id,
     String? email,
     String? displayName,
@@ -76,7 +77,7 @@ class User {
     int? tagTypeId,
     String? tagTypeName,
   }) {
-    return User(
+    return GuestUser(
       id: id ?? this.id,
       email: email ?? this.email,
       displayName: displayName ?? this.displayName,
@@ -96,8 +97,6 @@ class User {
       'id': id,
       'email': email,
       'displayName': displayName,
-      'first_name': firstName,
-      'last_name': lastName,
       'userLogin': userLogin,
       'token': token,
       'phone': phone,
@@ -108,8 +107,20 @@ class User {
     };
   }
 
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
+  ParticipantModel toParticipant() {
+    return ParticipantModel(
+      id: id,
+      email: email,
+      displayName: displayName,
+      phone: phone,
+      image: image,
+      tagTypeId: tagTypeId,
+      tagTypeName: tagTypeName,
+    );
+  }
+
+  factory GuestUser.fromMap(Map<String, dynamic> map) {
+    return GuestUser(
       id: map.from('ID') ?? map.from('user_id'),
       email: map.from('user_email'),
       userLogin: map.from<String?>('user_login') ?? '',

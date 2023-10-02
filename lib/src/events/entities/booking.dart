@@ -66,10 +66,10 @@ class Booking {
 
   bool get canCancel {
     return [
-          BookingStatus.waiting,
-          BookingStatus.confirmed,
-          BookingStatus.paid,
-        ].contains(status);
+      BookingStatus.waiting,
+      BookingStatus.confirmed,
+      BookingStatus.paid,
+    ].contains(status);
   }
 
 //<editor-fold desc="Data Methods">
@@ -193,6 +193,24 @@ class Booking {
   }
 
   factory Booking.fromMap(Map<String, dynamic> map) {
+    BookingStatus bookingStatus = BookingStatus.expired;
+    switch (map['status']) {
+      case 'waiting':
+        bookingStatus = BookingStatus.waiting;
+        break;
+      case 'confirmed':
+        bookingStatus = BookingStatus.confirmed;
+        break;
+      case 'paid':
+        bookingStatus = BookingStatus.paid;
+      case 'cancelled':
+        bookingStatus = BookingStatus.cancelled;
+      case 'expired':
+        bookingStatus = BookingStatus.expired;
+      case 'deleted':
+        bookingStatus = BookingStatus.deleted;
+        break;
+    }
     return Booking(
       id: map.from('ID'),
       author: map.from('bookings_author'),
@@ -207,7 +225,7 @@ class Booking {
       customPhone: map.from('comment.phone') ?? '',
       startDate: map.from('date_start'),
       endDate: map.from('date_end'),
-      status: map.from('status'),
+      status: bookingStatus,
       instagram: map.from('instagram'),
     );
   }

@@ -8,7 +8,7 @@ import 'package:gem_dubi/common/utils/validator.dart';
 import 'package:gem_dubi/common/widgets/avatar_image.dart';
 import 'package:gem_dubi/common/widgets/loading_button.dart';
 import 'package:gem_dubi/src/login/controller/login_controller.dart';
-import 'package:gem_dubi/src/login/user.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 
@@ -17,7 +17,7 @@ import '../../../common/utils/app_router.dart';
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key, required this.user});
 
-  final User user;
+  final GuestUser user;
 
   @override
   ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();

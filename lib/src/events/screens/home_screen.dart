@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gem_dubi/common/screens/notification_screen.dart';
 import 'package:gem_dubi/common/widgets/blue_background.dart';
 import 'package:gem_dubi/common/widgets/loading_widget.dart';
 import 'package:gem_dubi/const/resource.dart';
@@ -7,7 +8,7 @@ import 'package:gem_dubi/src/events/entities/category.dart';
 import 'package:gem_dubi/src/events/entities/listing.dart';
 import 'package:gem_dubi/src/events/widgets/event_card.dart';
 import 'package:gem_dubi/src/login/controller/login_controller.dart';
-import 'package:gem_dubi/src/login/user.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class EventsHomeScreen extends StatefulHookConsumerWidget {
@@ -21,7 +22,7 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
   bool _isInit = true;
   bool _isLoading = true;
   bool _isSearching = false;
-  User? _user;
+  GuestUser? _user;
   Category? _currentCategory;
 
   TabController? _tabController;
@@ -63,6 +64,7 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
     if (_isInit) {
       _user = ref.read(loginProviderRef).user;
       ref.watch(eventControllerRef).init(_user!).then((_) {
+        if(!mounted) return;
         final eventController = ref.read(eventControllerRef);
         _tabController = TabController(
           length: eventController.categories.length,
@@ -77,7 +79,7 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
           }
         });
         _isLoading = false;
-        setState(() {});
+        if (mounted) setState(() {});
       });
       _isInit = false;
     }
@@ -90,6 +92,7 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         title: Hero(
           tag: 'logo',
           child: Image.asset(
@@ -97,74 +100,98 @@ class _EventsHomeScreenState extends ConsumerState<EventsHomeScreen> with Single
             width: 36,
             height: 36,
             color: Colors.white,
-            // color: Theme.of(context).primaryColor,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const NotificationScreen();
+                },
+              ));
+            },
+            icon: const Icon(
+              Icons.notifications,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 5),
+        ],
         bottom: _tabController != null
             ? PreferredSize(
                 preferredSize: Size(MediaQuery.of(context).size.width, (kToolbarHeight * 2) + 10),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      child: TextFormField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Search',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          suffix: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 600),
-                            child: _searchController.text.trim().isNotEmpty
-                                ? GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _searchController.clear();
-                                        _isSearching = false;
-                                        _searchEventsList.clear();
-                                      });
-                                      FocusScope.of(context).unfocus();
-                                    },
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : null,
+                child: Container(
+                  decoration: const BoxDecoration(color: Colors.black),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                        child: TextFormField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search Events',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                            suffixIcon: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 600),
+                              child: _searchController.text.trim().isNotEmpty
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _searchController.clear();
+                                          _isSearching = false;
+                                          _searchEventsList.clear();
+                                        });
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.only(right: 8.0),
+                                        child: Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                          size: 22,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 5),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 600),
-                      child: !_isSearching
-                          ? Container(
-                              height: 40,
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                              child: TabBar(
-                                controller: _tabController,
-                                tabs: eventController.categories.map((e) => Tab(text: e.name)).toList(),
-                                indicator: BoxDecoration(
-                                  color: theme.cardColor,
-                                  borderRadius: BorderRadius.circular(20),
+                      const SizedBox(height: 5),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 600),
+                        child: !_isSearching
+                            ? Container(
+                                height: 40,
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: TabBar(
+                                  controller: _tabController,
+                                  tabs: eventController.categories.map((e) => Tab(text: e.name)).toList(),
+                                  indicator: BoxDecoration(
+                                    color: theme.cardColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  isScrollable: true,
+                                  indicatorPadding: EdgeInsets.zero,
+                                  indicatorSize: TabBarIndicatorSize.tab,
+                                  labelPadding: const EdgeInsets.symmetric(horizontal: 20),
+                                  onTap: (index) {
+                                    _user = ref.read(loginProviderRef).user;
+                                    _currentCategory = eventController.categories[index];
+                                    eventController.updateSelectedCategory(_user!, eventController.categories[index]);
+                                  },
                                 ),
-                                isScrollable: true,
-                                indicatorPadding: EdgeInsets.zero,
-                                indicatorSize: TabBarIndicatorSize.tab,
-                                labelPadding: const EdgeInsets.symmetric(horizontal: 20),
-                                onTap: (index) {
-                                  _user = ref.read(loginProviderRef).user;
-                                  _currentCategory = eventController.categories[index];
-                                  eventController.updateSelectedCategory(_user!, eventController.categories[index]);
-                                },
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
-                  ],
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
                 ),
               )
             : null,

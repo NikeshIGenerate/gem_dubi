@@ -1,16 +1,19 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gem_dubi/common/constants.dart';
 import 'package:gem_dubi/common/screens/home_screen_layout.dart';
 import 'package:gem_dubi/common/utils/app_router.dart';
 import 'package:gem_dubi/common/widgets/loading_widget.dart';
 import 'package:gem_dubi/common/widgets/logo.dart';
-import 'package:gem_dubi/common/wrappers/notification_wrapper.dart';
-import 'package:gem_dubi/src/events/controllers/events_controller.dart';
+import 'package:gem_dubi/src/chat/controllers/message_controller.dart';
+import 'package:gem_dubi/src/chat/conversation_list_screen.dart';
 import 'package:gem_dubi/src/login/controller/login_controller.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 import 'package:gem_dubi/src/login/screens/login_screen.dart';
-import 'package:gem_dubi/src/login/user.dart';
 import 'package:gem_dubi/src/on_boarding/on_boarding_repository.dart';
 import 'package:gem_dubi/src/on_boarding/on_boarding_screens.dart';
 
@@ -31,15 +34,46 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (firstTime) {
       router.pushReplacement(const OnBoardingScreen());
     } else {
-      User? user = await ref.read(loginProviderRef).init();
+      GuestUser? user = await ref.read(loginProviderRef).init();
       print(user);
-      if(user != null) {
-        router.replaceAllWith(const HomeScreenLayout());
-      }
-      else {
+      if (user != null) {
+        if (user.email == kAdminEmail) {
+          unawaited(ref.read(loginProviderRef).setDeviceToken(user));
+          router.replaceAllWith(const ConversationListScreen());
+        } else {
+          if (user.status == UserState.approved && user.tagTypeId != null) {
+            unawaited(ref.read(loginProviderRef).setDeviceToken(user));
+            unawaited(subscribeGroupNotificationForUser(user));
+            await addNewUserToGroup(user);
+          }
+          router.replaceAllWith(const HomeScreenLayout());
+        }
+      } else {
         router.pushReplacement(const LoginScreen());
       }
       // router.pushReplacement(const LoginScreen());
+    }
+  }
+
+  Future<void> subscribeGroupNotificationForUser(GuestUser user) async {
+    final groups = await ref.read(messageControllerRef).getGroupConversationByUserId(user.id);
+    if (groups.isNotEmpty) {
+      for (var element in groups) {
+        unawaited(FirebaseMessaging.instance.subscribeToTopic('${element.id}-user'));
+      }
+    }
+  }
+
+  Future<void> addNewUserToGroup(GuestUser user) async {
+    final groups = await ref.read(messageControllerRef).getGroupConversationByGirlType(user.tagTypeId ?? 0);
+    print('addNewUserToGroup ::: ${groups.length}');
+    if (groups.isEmpty) return;
+    for (var element in groups) {
+      bool isExists = element.participantsIds.any((ele) => ele == user.id);
+      print('addNewUserToGroup ::: ${isExists}');
+      if (!isExists) {
+        await ref.read(messageControllerRef).addNewUserToExistingGroup(element.id, user);
+      }
     }
   }
 
@@ -63,7 +97,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ],
           ),
         ),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             FractionallySizedBox(

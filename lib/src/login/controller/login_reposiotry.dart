@@ -7,7 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:gem_dubi/common/converter/converter.dart';
 import 'package:gem_dubi/common/utils/dio_client.dart';
 import 'package:gem_dubi/common/utils/share_preferences.dart';
-import 'package:gem_dubi/src/login/user.dart';
+import 'package:gem_dubi/src/login/guest_user.dart';
 
 const _kTokenKey = 'LoginRepository.user_token';
 
@@ -19,7 +19,7 @@ class LoginRepository {
   static const kEmailKey = 'LoginRepository.user_email';
   static const kPasswordKey = 'LoginRepository.user_password';
 
-  Future<User?> initUser() async {
+  Future<GuestUser?> initUser() async {
     try {
       final token = await LocalStorageRepo.instance().getString(_kTokenKey);
 
@@ -64,7 +64,7 @@ class LoginRepository {
     }
   }
 
-  Future<User> login(String email, String password) async {
+  Future<GuestUser> login(String email, String password) async {
     final response =
         await dio.post<Map>('/simple-jwt-login/v1/auth', queryParameters: {
       'email': email,
@@ -104,7 +104,7 @@ class LoginRepository {
     }
   }
 
-  Future<User> updateProfile({
+  Future<GuestUser> updateProfile({
     required String id,
     required int tagTypeId,
     String? email,
@@ -133,7 +133,7 @@ class LoginRepository {
       );
       print(response.body);
       final data = jsonDecode(response.body) as Map<String, dynamic>;
-      return User.fromMap(data['data']);
+      return GuestUser.fromMap(data['data']);
     } catch (e) {
       print(e);
       rethrow;
